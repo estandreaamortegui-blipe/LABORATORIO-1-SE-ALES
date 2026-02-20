@@ -1,5 +1,7 @@
 LABORATORIO 1 – SEÑALES
+
 Andrea Carolina Amortegui Carrillo – 5600963
+
 Sara Sofía Piñeros Tovar – 5600962
 
 INTRODUCCIÓN
