@@ -1,6 +1,7 @@
 LABORATORIO 1 – SEÑALES
 
 Andrea Carolina Amortegui Carrillo – 5600963
+
 Sara Sofía Piñeros Tovar – 5600962
 
 INTRODUCCIÓN
@@ -11,9 +12,11 @@ Para la realización de esta práctica, lo que se hizo fue generar un análisis 
 OBJETIVOS
 
 Objetivo General
+
 Identificar de forma estadística la  toma del ECG analizando su condición por medio de la Relación Señal-Ruido.
 
 Objetivos Específicos
+
 Tomar los datos de un ECG mediante PhysioNet.
  Realizar la gráfica y los cálculos de la señal en Python.
  Crear un histograma de las amplitudes.
@@ -21,30 +24,77 @@ Tomar los datos de un ECG mediante PhysioNet.
  Analizar el SNR mediante varias formas de ruido.
 
 DESCRIPCIÓN DE LA SEÑAL
+
 Implementamos un  registro ath_001, que le pertenece a  Norwegian Endurance Athlete ECG Database, la cual es una señal ECG, que cuenta con una derivación del Canal 1 con su frecuencia de 1000 Hz, para ser analizada en Python utilizando 20000 muestras para poder ser vista. por otro lado se usaron las siguientes librerías:  matplotlib, nidaqmx, scipy.stats, numpy y wfdb
 
  
 PROCEDIMIENTO
-Para la realización de esta guía, se inició con la lectura de los ECG por medio de wfdb.rdrecord("ath_001"), luego se tomó la derivación para construir el vector tiempo con el fin de mostrar la señal graficada, se calculó la media, coeficiente de variación, curtosis, skewness y desviación estándar, para evaluar los datos tomados de scipy.stats y numpy con el propósito de crear en 20 intervalos un histograma
+
+Para la realización de esta guía, se inició con la lectura de los ECG por medio de wfdb.rdrecord("ath_001"), luego se tomó la derivación para construir el vector tiempo con el fin de mostrar la señal graficada, se calculó la media, coeficiente de variación, curtosis, skewness y desviación estándar, para evaluar los datos tomados de scipy.stats y numpy con el propósito de crear en 20 intervalos un histograma.
+
+Las señales de los deportistas fueron tomadas en deportistas de alto rendimiento. Donde se les ofrecio monitoreo en reposo de 10 segundos analizados por un cardiologo experto. Con el objetivo de mejorar la precision diagnostica en este grupo poblacionas, ya que el corazon de estos deportistas podria llegarse a confundir con patologias graves. Se capturaron 12 derivaciones con una frecuencia de muestreo de 1000 Hz, donde se mostaban 5000 muestras por cada señal de 10 segundos.
+
 Por otro lado, se tomó una señal por el NI-DAQ  que tenia en 10 segundos una frecuencia de 1000 Hz para realizar un procesamiento por medio de un .txt. y luego se analizo la contraste de la señal por el  SNR, e cual fue utilizado con ruido gaussiano, tipo artefacto e   impulso.
 
-ANÁLISIS ESTADÍSTICO
+El codigo fue estructuado de la siguiente manera donde en primer lugar se busco importar la señal de physionet utiliando la libreria wfdb. esta señal fue adaptada para que se mostrara con frecuencias en lugar de muestras
+
+
+<img width="1355" height="525" alt="image" src="https://github.com/user-attachments/assets/3169c5f3-9080-499e-ae6d-6a43a6c22258" />
+Imagen en donde se evidencia como se importo la señal a python.
+
+
+Seguido a esto se calcularon las estadisticas manuales, donde se tuvieron en cuenta las formulas teoricas estadisticas, donde se calculo:
+
 Media: valor estimado de su amplitud
+
 <img width="201" height="62" alt="image" src="https://github.com/user-attachments/assets/78f0c2bd-08a6-452d-b8ce-3c77643dc328" />
 
+Media en el programa:
+<img width="989" height="194" alt="image" src="https://github.com/user-attachments/assets/54c8d49a-dbe3-42a2-bad1-b8c1f3cb9b4f" />
+
 Desviación Estándar: dispersión de la señal de acuerdo al promedio
+
 <img width="212" height="72" alt="image" src="https://github.com/user-attachments/assets/598e38ee-4633-4239-bc7a-e22b73319f66" />
 
+Desviación Estándar en el programa:
+<img width="1216" height="210" alt="image" src="https://github.com/user-attachments/assets/60a1c949-8991-4818-a6c2-bd27cee14275" />
+
 Coeficiente de Variación: dispersión de la señal según la media
+
 <img width="132" height="83" alt="image" src="https://github.com/user-attachments/assets/99ffc9e8-fac5-4d06-ad0c-5b0feeac8954" />
 
+Coeficiente de Variación en el programa:
+<img width="535" height="99" alt="image" src="https://github.com/user-attachments/assets/a480b504-84f0-4a50-841d-5d80805d4faf" />
+
 Skewness: asimetría en los picos r
+
 <img width="323" height="88" alt="image" src="https://github.com/user-attachments/assets/4e6e7d22-52d9-41bd-8205-2da5200191bc" />
 
+Skewness en el programa:
+<img width="568" height="160" alt="image" src="https://github.com/user-attachments/assets/adc65834-d177-4a95-9550-92179cb55382" />
+
 Curtosis. complejos QRS
+
 <img width="312" height="91" alt="image" src="https://github.com/user-attachments/assets/96df522f-e77d-46f0-ac11-1bd3ba0a6fa8" />
 
+Curtosis en el programa:
+
+<img width="473" height="220" alt="image" src="https://github.com/user-attachments/assets/ab0caacf-2722-4434-b3bd-40e782bb407a" />
+
+Despues hicimos los mismos datos estadisticos pero usando funciones de python para poder comparar si los datos manuales o con funciones eran parecidos, en donde usamos librerias como scipy y numpy para calcular estos datos.
+
+Media, Desviacón estandar y Coeficiente de variación, hechas con funciones.
+
+<img width="504" height="361" alt="image" src="https://github.com/user-attachments/assets/b7297ec4-0cbd-414b-b5bc-3e2e8db07b83" />
+
+Skewness y Curtosis, hechas con funcines.
+
+<img width="598" height="274" alt="image" src="https://github.com/user-attachments/assets/24d7a9fb-b9e6-466c-9209-03efc84cd4aa" />
+
+
+
 TOMA DE SEÑAL
+
 Con la NI-DAQ se realizó una configuración, ya que se ocuparon 1000 Hz para su Frecuencia de muestreo de 10 segundos y se obtuvo un total muestras de 10000, par después ser guardada en un archivo .txt y  vector de tiempo para poder ser vista gracias a la gráfica
 
 (SNR) RELACIÓN SEÑAL RUIDO 
@@ -69,9 +119,11 @@ Los datos  tomados lograron identificar de forma general el ECG, ya que se vio d
 PREGUNTAS
 
 ¿Los valores estadísticos de la señal real y la adquirida son iguales?
+
 No, debido a que esta señal cuenta con cambios  del ritmo del corazón, tales como frecuencia y por otro lado, la señal que se obtuvo en la guía, está directamente relacionada con los equipo y su debida realización, generado que todos los datos cambian como lo sería  en su desviación estándar, curtosis y media
 
 ¿El tipo de ruido afecta la SNR?
+
 Sí, puesto que cada  ruido alterado, va a cambiar  el comportamiento del SNR, ya que  cada uno actúa de forma distinta, como lo sería el  impulso, pues este crea pico exagerados que la alteran, por parte del artefacto su frecuencia disminuye y el gaussiano cambia señal de forma paulatinamente.
 
 
