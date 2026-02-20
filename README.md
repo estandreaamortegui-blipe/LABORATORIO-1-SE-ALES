@@ -50,6 +50,7 @@ Media: valor estimado de su amplitud
 <img width="201" height="62" alt="image" src="https://github.com/user-attachments/assets/78f0c2bd-08a6-452d-b8ce-3c77643dc328" />
 
 Media en el programa:
+
 <img width="989" height="194" alt="image" src="https://github.com/user-attachments/assets/54c8d49a-dbe3-42a2-bad1-b8c1f3cb9b4f" />
 
 Desviación Estándar: dispersión de la señal de acuerdo al promedio
@@ -57,6 +58,7 @@ Desviación Estándar: dispersión de la señal de acuerdo al promedio
 <img width="212" height="72" alt="image" src="https://github.com/user-attachments/assets/598e38ee-4633-4239-bc7a-e22b73319f66" />
 
 Desviación Estándar en el programa:
+
 <img width="1216" height="210" alt="image" src="https://github.com/user-attachments/assets/60a1c949-8991-4818-a6c2-bd27cee14275" />
 
 Coeficiente de Variación: dispersión de la señal según la media
@@ -64,6 +66,7 @@ Coeficiente de Variación: dispersión de la señal según la media
 <img width="132" height="83" alt="image" src="https://github.com/user-attachments/assets/99ffc9e8-fac5-4d06-ad0c-5b0feeac8954" />
 
 Coeficiente de Variación en el programa:
+
 <img width="535" height="99" alt="image" src="https://github.com/user-attachments/assets/a480b504-84f0-4a50-841d-5d80805d4faf" />
 
 Skewness: asimetría en los picos r
@@ -71,6 +74,7 @@ Skewness: asimetría en los picos r
 <img width="323" height="88" alt="image" src="https://github.com/user-attachments/assets/4e6e7d22-52d9-41bd-8205-2da5200191bc" />
 
 Skewness en el programa:
+
 <img width="568" height="160" alt="image" src="https://github.com/user-attachments/assets/adc65834-d177-4a95-9550-92179cb55382" />
 
 Curtosis. complejos QRS
