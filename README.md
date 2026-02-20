@@ -103,12 +103,20 @@ P señal: promedio de la señal original
 
 <img width="283" height="88" alt="image" src="https://github.com/user-attachments/assets/4625310c-aa9d-4915-a49b-fb31a099c495" />
 
+Señal original
+
+<img width="738" height="561" alt="image" src="https://github.com/user-attachments/assets/03e12848-dc01-497f-b9f5-6c5b6feaddb3" />
+
 
 Se ocuparon 3 ruidos. Gaussiano el cual disminuye el SNR  aumentando su varianza. El impulso proporciona picos que hacen que la curtosis aumente. El artefacto modifica su línea original alterando la desviación y la media
 
-<img width="763" height="573" alt="image" src="https://github.com/user-attachments/assets/931f696f-1931-48e2-8874-35bcc81617e9" />
-<img width="735" height="571" alt="image" src="https://github.com/user-attachments/assets/3d09e9e1-1fe8-40f0-93d4-100d58bf04f5" />
-<img width="746" height="563" alt="image" src="https://github.com/user-attachments/assets/d57e4e5b-be23-48f5-9ad8-b2e9195e51c7" />
+<img width="719" height="534" alt="image" src="https://github.com/user-attachments/assets/51abe5c2-0eab-405c-8087-2eca429b75b2" />
+
+<img width="757" height="556" alt="image" src="https://github.com/user-attachments/assets/9dc12978-0351-4c9a-90b8-14e12c4af84b" />
+
+<img width="707" height="563" alt="image" src="https://github.com/user-attachments/assets/e1a4a724-b34b-4ad3-8e1e-5113c293cf2c" />
+
+
 
 
 DIAGRAMA DE FLUJO
