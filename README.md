@@ -111,6 +111,11 @@ Se ocuparon 3 ruidos. Gaussiano el cual disminuye el SNR  aumentando su varianza
 <img width="746" height="563" alt="image" src="https://github.com/user-attachments/assets/d57e4e5b-be23-48f5-9ad8-b2e9195e51c7" />
 
 
+DIAGRAMA DE FLUJO
+
+
+<img width="1056" height="588" alt="image" src="https://github.com/user-attachments/assets/103f5233-b4d9-4992-ba71-3a4f4be83c38" />
+
 
 ANÁLISIS DE LOS RESULTADOS
 
