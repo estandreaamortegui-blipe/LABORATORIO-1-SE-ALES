@@ -1,151 +1,153 @@
-LABORATORIO 1 – SEÑALES
+# LABORATORIO 5 – HRV Y BALANCE AUTONÓMICO
 
-Andrea Carolina Amortegui Carrillo – 5600963
+
 
 Sara Sofía Piñeros Tovar – 5600962
 
-INTRODUCCIÓN
+---
 
-Los  (ECG)  electrocardiogramas son señales las cuales muestran el comportamiento del corazón en su forma eléctrica  en la cual se puede  analizar que partes están afectadas de acuerdo a la forma de ruido que arroja para así realizar una interpretación del resultado ya que esta nos da información fisiología del comportamiento eléctrico de corazon.
-Para la realización de esta práctica, lo que se hizo fue generar un análisis de un (ECG) en la página  PhysioNet (registro ath_001) la cual son  datos reales, para luego cuantificar datos  manualmente y  en Python, tomando la señal por medio de un NI-DAQ identificando que tan buena era la señal por medio de (SNR)  alterando el ruido de la señal.
+# INTRODUCCIÓN
 
-OBJETIVOS
+La variabilidad de la frecuencia cardíaca (HRV, Heart Rate Variability) corresponde a las variaciones temporales existentes entre latidos consecutivos del corazón, conocidos como intervalos RR. Estas variaciones permiten evaluar el comportamiento del sistema nervioso autónomo, especialmente el equilibrio entre la actividad simpática y parasimpática. El análisis HRV es ampliamente utilizado en ingeniería biomédica y medicina debido a que proporciona información importante sobre el estado fisiológico, el estrés, la regulación cardíaca y diferentes condiciones clínicas.
 
-Objetivo General
+Para la realización de esta práctica se adquirió una señal electrocardiográfica (ECG) utilizando un sistema STM32 conectado a un sensor AD8232. La señal fue registrada durante dos condiciones fisiológicas diferentes: reposo y lectura en voz alta. Posteriormente, la señal ECG fue procesada en Python utilizando técnicas de filtrado digital, detección de picos R y análisis estadístico y geométrico de la variabilidad cardíaca.
 
-Identificar de forma estadística la  toma del ECG analizando su condición por medio de la Relación Señal-Ruido.
+Durante el procesamiento se implementó un filtro IIR Butterworth pasa banda para reducir el ruido presente en la señal ECG y facilitar la identificación de los complejos QRS. A partir de la detección de los picos R se calcularon los intervalos RR y parámetros HRV como SDNN, SD1, SD2, CSI y CVI, además de construir diagramas de Poincaré para analizar el balance autonómico entre ambas condiciones experimentales.
 
-Objetivos Específicos
+---
 
-Tomar los datos de un ECG mediante PhysioNet.
- Realizar la gráfica y los cálculos de la señal en Python.
- Crear un histograma de las amplitudes.
- Obtener la señal  con el NI-DAQ
- Analizar el SNR mediante varias formas de ruido.
+# OBJETIVOS
 
-DESCRIPCIÓN DE LA SEÑAL
+## Objetivo General
 
-Implementamos un  registro ath_001, que le pertenece a  Norwegian Endurance Athlete ECG Database, la cual es una señal ECG, que cuenta con una derivación del Canal 1 con su frecuencia de 1000 Hz, para ser analizada en Python utilizando 20000 muestras para poder ser vista. por otro lado se usaron las siguientes librerías:  matplotlib, nidaqmx, scipy.stats, numpy y wfdb
+Analizar la variabilidad de la frecuencia cardíaca mediante el procesamiento digital de una señal ECG para evaluar el balance autonómico durante estados de reposo y lectura en voz alta.
 
- 
-PROCEDIMIENTO
+---
 
-Para la realización de esta guía, se inició con la lectura de los ECG por medio de wfdb.rdrecord("ath_001"), luego se tomó la derivación para construir el vector tiempo con el fin de mostrar la señal graficada, se calculó la media, coeficiente de variación, curtosis, skewness y desviación estándar, para evaluar los datos tomados de scipy.stats y numpy con el propósito de crear en 20 intervalos un histograma.
+## Objetivos Específicos
 
-Las señales de los deportistas fueron tomadas en deportistas de alto rendimiento. Donde se les ofrecio monitoreo en reposo de 10 segundos analizados por un cardiologo experto. Con el objetivo de mejorar la precision diagnostica en este grupo poblacionas, ya que el corazon de estos deportistas podria llegarse a confundir con patologias graves. Se capturaron 12 derivaciones con una frecuencia de muestreo de 1000 Hz, donde se mostaban 5000 muestras por cada señal de 10 segundos.
+* Adquirir una señal ECG utilizando STM32 y el sensor AD8232.
+* Procesar la señal ECG en Python mediante técnicas de filtrado digital.
+* Detectar automáticamente los picos R de la señal cardíaca.
+* Calcular los intervalos RR y parámetros HRV.
+* Construir diagramas de Poincaré para el análisis geométrico de la HRV.
+* Comparar la actividad simpática y parasimpática entre reposo y lectura.
 
-Por otro lado, se tomó una señal por el NI-DAQ  que tenia en 10 segundos una frecuencia de 1000 Hz para realizar un procesamiento por medio de un .txt. y luego se analizo la contraste de la señal por el  SNR, e cual fue utilizado con ruido gaussiano, tipo artefacto e   impulso.
+---
 
-El codigo fue estructuado de la siguiente manera donde en primer lugar se busco importar la señal de physionet utiliando la libreria wfdb. esta señal fue adaptada para que se mostrara con frecuencias en lugar de muestras
+# DESCRIPCIÓN DE LA SEÑAL
 
+La señal utilizada en el laboratorio correspondió a una señal electrocardiográfica (ECG) adquirida mediante un módulo AD8232 conectado a una tarjeta STM32. La adquisición se realizó durante un tiempo total de cuatro minutos con una frecuencia de muestreo determinada por el sistema de captura. La señal fue almacenada en formato `.wav` para su posterior procesamiento digital en Python.
 
-<img width="1355" height="525" alt="image" src="https://github.com/user-attachments/assets/3169c5f3-9080-499e-ae6d-6a43a6c22258" />
-Imagen en donde se evidencia como se importo la señal a python.
+La captura experimental fue dividida en dos segmentos fisiológicos diferentes. Durante los primeros dos minutos el participante permaneció en estado de reposo y silencio, mientras que en los dos minutos restantes realizó lectura en voz alta. Esto permitió comparar el comportamiento cardíaco y el balance autonómico bajo dos condiciones distintas de actividad fisiológica.
 
+Para el procesamiento digital de la señal se utilizaron las librerías NumPy, Matplotlib y SciPy, las cuales permitieron realizar el filtrado digital, detección de picos R, análisis estadístico y construcción de diagramas de Poincaré.
 
-Seguido a esto se calcularon las estadisticas manuales, donde se tuvieron en cuenta las formulas teoricas estadisticas, donde se calculo:
+---
 
-Media: valor estimado de su amplitud
+# PROCEDIMIENTO
 
-<img width="201" height="62" alt="image" src="https://github.com/user-attachments/assets/78f0c2bd-08a6-452d-b8ce-3c77643dc328" />
+Para el desarrollo de la práctica inicialmente se realizó una investigación teórica sobre variabilidad de la frecuencia cardíaca, sistema nervioso simpático, sistema nervioso parasimpático, intervalos RR y diagramas de Poincaré. Posteriormente, se preparó el sistema de adquisición utilizando el módulo AD8232, la tarjeta STM32 y electrodos de superficie colocados en configuración RA-LA-RL para registrar la actividad eléctrica cardíaca.
 
-Media en el programa:
+La señal ECG fue adquirida durante cuatro minutos y transmitida desde la STM32 hacia Python mediante comunicación serial UART. Posteriormente, la señal fue almacenada en formato `.wav` para facilitar su procesamiento digital. Una vez cargada la señal en Python mediante `wavfile.read()`, se realizó la normalización de amplitud y la construcción del vector de tiempo para visualizar gráficamente el ECG original.
 
-<img width="989" height="194" alt="image" src="https://github.com/user-attachments/assets/54c8d49a-dbe3-42a2-bad1-b8c1f3cb9b4f" />
+El código fue estructurado inicialmente para importar la señal ECG utilizando SciPy. Posteriormente, se verificó si el archivo contenía uno o dos canales y se seleccionó únicamente el primer canal para el análisis. Después se realizó la normalización de la señal y la generación del vector de tiempo con base en la frecuencia de muestreo.
 
-Desviación Estándar: dispersión de la señal de acuerdo al promedio
+Seguido a esto, se implementó un filtro IIR Butterworth pasa banda de cuarto orden con frecuencias de corte entre 0.5 Hz y 40 Hz. Este filtro permitió eliminar ruido de alta frecuencia y variaciones lentas de línea base presentes en la señal ECG. Las frecuencias de corte fueron normalizadas respecto a la frecuencia de Nyquist y posteriormente se calcularon los coeficientes del filtro mediante `signal.butter()`. Finalmente, el filtrado se realizó utilizando `signal.lfilter()`.
 
-<img width="212" height="72" alt="image" src="https://github.com/user-attachments/assets/598e38ee-4633-4239-bc7a-e22b73319f66" />
+Posteriormente, la señal filtrada fue dividida en dos segmentos correspondientes a reposo y lectura. Para cada segmento se utilizó la función `find_peaks()` de SciPy con el fin de detectar automáticamente los picos R presentes en la señal ECG. La detección se realizó estableciendo una distancia mínima entre latidos equivalente a 0.6 segundos y un nivel de prominencia de 0.3.
 
-Desviación Estándar en el programa:
+A partir de los picos R detectados se calcularon los intervalos RR utilizando la diferencia temporal entre latidos consecutivos. Posteriormente, se calcularon parámetros HRV como la media RR y SDNN. Además, se construyeron diagramas de Poincaré mediante pares consecutivos RR(n) y RR(n+1), permitiendo calcular parámetros geométricos SD1 y SD2.
 
-<img width="1216" height="210" alt="image" src="https://github.com/user-attachments/assets/60a1c949-8991-4818-a6c2-bd27cee14275" />
+Finalmente, se calcularon los índices CSI y CVI para evaluar el balance autonómico del participante. El índice CSI permitió analizar el predominio simpático, mientras que el índice CVI se relacionó con la actividad vagal o parasimpática. Los resultados obtenidos fueron comparados entre los estados de reposo y lectura.
 
-Coeficiente de Variación: dispersión de la señal según la media
+---
 
-<img width="132" height="83" alt="image" src="https://github.com/user-attachments/assets/99ffc9e8-fac5-4d06-ad0c-5b0feeac8954" />
+# DIAGRAMA DE FLUJO
 
-Coeficiente de Variación en el programa:
+El procedimiento experimental desarrollado durante el laboratorio siguió una secuencia organizada que inició con la investigación teórica sobre HRV y balance autonómico. Posteriormente, se realizó la preparación del sistema biomédico utilizando STM32, el sensor AD8232 y los electrodos de superficie para adquirir la señal ECG.
 
-<img width="535" height="99" alt="image" src="https://github.com/user-attachments/assets/a480b504-84f0-4a50-841d-5d80805d4faf" />
+Después de la adquisición, la señal fue enviada desde la STM32 hacia Python mediante comunicación serial y almacenada en formato `.wav`. Posteriormente, se realizó el filtrado digital utilizando un filtro Butterworth pasa banda y se dividió la señal en segmentos de reposo y lectura.
 
-Skewness: asimetría en los picos r
+Finalmente, se detectaron los picos R, se calcularon los intervalos RR y parámetros HRV, se construyeron diagramas de Poincaré y se evaluó el comportamiento simpático y parasimpático mediante los índices CSI y CVI.
 
-<img width="323" height="88" alt="image" src="https://github.com/user-attachments/assets/4e6e7d22-52d9-41bd-8205-2da5200191bc" />
+---
 
-Skewness en el programa:
+# RESULTADOS
 
-<img width="568" height="160" alt="image" src="https://github.com/user-attachments/assets/adc65834-d177-4a95-9550-92179cb55382" />
+## Parámetros HRV
 
-Curtosis. complejos QRS
+| Parámetro | Reposo  | Lectura |
+| --------- | ------- | ------- |
+| Media RR  | 0.84 s  | 0.76 s  |
+| SDNN      | 0.072 s | 0.049 s |
+| SD1       | 0.041   | 0.028   |
+| SD2       | 0.083   | 0.071   |
+| CSI       | 2.02    | 2.53    |
+| CVI       | -2.47   | -2.70   |
 
-<img width="312" height="91" alt="image" src="https://github.com/user-attachments/assets/96df522f-e77d-46f0-ac11-1bd3ba0a6fa8" />
+---
 
-Curtosis en el programa:
+## ECG Original
 
-<img width="473" height="220" alt="image" src="https://github.com/user-attachments/assets/ab0caacf-2722-4434-b3bd-40e782bb407a" />
+La señal ECG original presentó una adecuada morfología cardíaca permitiendo identificar claramente los complejos QRS. Sin embargo, también se observaron pequeñas fluctuaciones y componentes de ruido asociados a la adquisición biomédica y movimiento del paciente.
 
-Despues hicimos los mismos datos estadisticos pero usando funciones de python para poder comparar si los datos manuales o con funciones eran parecidos, en donde usamos librerias como scipy y numpy para calcular estos datos.
+---
 
-Media, Desviacón estandar y Coeficiente de variación, hechas con funciones.
+## ECG Filtrado
 
-<img width="504" height="361" alt="image" src="https://github.com/user-attachments/assets/b7297ec4-0cbd-414b-b5bc-3e2e8db07b83" />
+El filtro Butterworth permitió reducir considerablemente las interferencias de alta frecuencia y las variaciones lentas de línea base. Esto facilitó la identificación de los picos R y mejoró la calidad general de la señal ECG para el análisis HRV.
 
-Skewness y Curtosis, hechas con funcines.
+---
 
-<img width="598" height="274" alt="image" src="https://github.com/user-attachments/assets/24d7a9fb-b9e6-466c-9209-03efc84cd4aa" />
+## Detección de Picos R
 
+La detección automática de picos R realizada mediante `find_peaks()` mostró una adecuada precisión tanto en el segmento de reposo como en el segmento de lectura. Los picos detectados coincidieron correctamente con los complejos QRS observados en la señal ECG.
 
+---
 
-TOMA DE SEÑAL
+## Diagramas de Poincaré
 
-Con la NI-DAQ se realizó una configuración, ya que se ocuparon 1000 Hz para su Frecuencia de muestreo de 10 segundos y se obtuvo un total muestras de 10000, par después ser guardada en un archivo .txt y  vector de tiempo para poder ser vista gracias a la gráfica
+El diagrama de Poincaré obtenido durante el estado de reposo presentó una nube de puntos más dispersa, indicando mayor variabilidad cardíaca y predominio parasimpático. En contraste, durante la lectura la nube presentó menor dispersión y una alineación más longitudinal, indicando disminución de la variabilidad cardíaca y aumento relativo de actividad simpática.
 
-(SNR) RELACIÓN SEÑAL RUIDO 
-P ruido: promedio del ruido
-P señal: promedio de la señal original
+---
 
-<img width="283" height="88" alt="image" src="https://github.com/user-attachments/assets/4625310c-aa9d-4915-a49b-fb31a099c495" />
+# ANÁLISIS DE LOS RESULTADOS
 
-Señal original
+Los resultados obtenidos permitieron identificar cambios fisiológicos importantes entre las condiciones de reposo y lectura en voz alta. Durante la lectura se observó una disminución de los intervalos RR promedio, indicando un aumento de la frecuencia cardíaca asociado al esfuerzo cognitivo y respiratorio producido por la verbalización.
 
-<img width="738" height="561" alt="image" src="https://github.com/user-attachments/assets/03e12848-dc01-497f-b9f5-6c5b6feaddb3" />
+Asimismo, el parámetro SDNN disminuyó durante la lectura, evidenciando una reducción de la variabilidad cardíaca respecto al estado de reposo. Esto indica una menor capacidad adaptativa del sistema cardiovascular frente a estímulos fisiológicos.
 
+Por otra parte, el índice CSI aumentó durante la lectura, sugiriendo un incremento de la actividad simpática. Adicionalmente, el índice CVI disminuyó ligeramente, indicando una reducción relativa de la actividad parasimpática o vagal.
 
-Se ocuparon 3 ruidos. Gaussiano el cual disminuye el SNR  aumentando su varianza. El impulso proporciona picos que hacen que la curtosis aumente. El artefacto modifica su línea original alterando la desviación y la media
+Los diagramas de Poincaré confirmaron estos hallazgos, ya que durante la lectura se observó una nube de puntos menos dispersa y más alineada, reflejando menor variabilidad de los intervalos RR.
 
-<img width="719" height="534" alt="image" src="https://github.com/user-attachments/assets/51abe5c2-0eab-405c-8087-2eca429b75b2" />
+---
 
-<img width="757" height="556" alt="image" src="https://github.com/user-attachments/assets/9dc12978-0351-4c9a-90b8-14e12c4af84b" />
+# PREGUNTAS
 
-<img width="707" height="563" alt="image" src="https://github.com/user-attachments/assets/e1a4a724-b34b-4ad3-8e1e-5113c293cf2c" />
+## ¿La lectura en voz alta modifica la variabilidad cardíaca?
 
+Sí, debido a que durante la lectura se incrementa la actividad simpática asociada al esfuerzo cognitivo y respiratorio. Esto produce un aumento de la frecuencia cardíaca y una disminución de la variabilidad de los intervalos RR, evidenciada mediante la reducción de SDNN y SD1.
 
+---
 
+## ¿Por qué es necesario filtrar la señal ECG?
 
-DIAGRAMA DE FLUJO
+El filtrado permite eliminar ruido e interferencias presentes en la señal biomédica, tales como variaciones lentas de línea base y ruido de alta frecuencia. Esto mejora considerablemente la detección de los complejos QRS y aumenta la precisión del análisis HRV.
 
+---
 
-<img width="1056" height="588" alt="image" src="https://github.com/user-attachments/assets/103f5233-b4d9-4992-ba71-3a4f4be83c38" />
+## ¿Qué representan los índices CSI y CVI?
 
+El índice CSI representa el predominio de actividad simpática, mientras que el índice CVI se relaciona con la actividad parasimpática o vagal. Ambos parámetros permiten evaluar el balance autonómico del organismo bajo diferentes condiciones fisiológicas.
 
-ANÁLISIS DE LOS RESULTADOS
+---
 
-Los datos  tomados lograron identificar de forma general el ECG, ya que se vio diferentes alteraciones según el ruido que se colocaba, debido a que en el impulso se modificó la organización de la señal, por parte de la curtosis, cuando esta se eleva, muestra los complejos QRS, y por último en el ruido gaussiano, se evidencio una disminución del SNR cambiando la forma de la onda, por lo cual se alteró la desviación, con ellos se pudo datificar el deterioro.
+# CONCLUSIONES
 
-PREGUNTAS
+Como se evidenció durante el desarrollo de la práctica, fue posible adquirir y procesar correctamente una señal ECG utilizando el sistema STM32 y Python. El filtrado digital implementado mediante el filtro Butterworth permitió mejorar considerablemente la calidad de la señal y facilitar la detección de los picos R.
 
-¿Los valores estadísticos de la señal real y la adquirida son iguales?
+Adicionalmente, el análisis HRV permitió identificar cambios fisiológicos importantes entre las condiciones de reposo y lectura. Durante la lectura se observó una disminución de la variabilidad cardíaca y un incremento relativo de actividad simpática, evidenciado mediante los parámetros SDNN, CSI y los diagramas de Poincaré.
 
-No, debido a que esta señal cuenta con cambios  del ritmo del corazón, tales como frecuencia y por otro lado, la señal que se obtuvo en la guía, está directamente relacionada con los equipo y su debida realización, generado que todos los datos cambian como lo sería  en su desviación estándar, curtosis y media
-
-¿El tipo de ruido afecta la SNR?
-
-Sí, puesto que cada  ruido alterado, va a cambiar  el comportamiento del SNR, ya que  cada uno actúa de forma distinta, como lo sería el  impulso, pues este crea pico exagerados que la alteran, por parte del artefacto su frecuencia disminuye y el gaussiano cambia señal de forma paulatinamente.
-
-
-CONCLUSIONES
-
-Como se evidencio, se pudo cuantificar la señal ECG real, y la señal capturada en laboratorio, y los datos fueron similares a los del  Python. Por otro lado, se comprobó que la curtosis es la responsable de aumentar la visualización de los complejos QRS en el ECG, comprobando así que hay  picos en actividad eléctrica del corazón.
-Adicionalmente, el  SNR logró analizar  la activación de los cambios por medio de variaciones de ruidos para la señal, evidenciando como su integridad actúa de forma diferente.A pesar de esto, lo ideal sería complementar con otro tipo de formas de análisis para evaluar la señal, para si lograr unos datos más precisos y que el resultado sea más completo
-
+Finalmente, los índices geométricos y estadísticos utilizados demostraron ser herramientas útiles para evaluar el comportamiento del sistema nervioso autónomo y analizar la dinámica cardíaca bajo diferentes condiciones fisiológicas.
