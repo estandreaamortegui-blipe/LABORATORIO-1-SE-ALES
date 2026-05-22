@@ -1,229 +1,212 @@
-import wfdb
-import nidaqmx
-from nidaqmx.constants import (AcquisitionType)
-import matplotlib.pyplot as plt
-import os
-import numpy as np
+from scipy import signal
+from scipy.io import wavfile
 
-#GRAFICA DE LA SEÑAL
-record = wfdb.rdrecord("ath_001")
-signal = record.p_signal# p_signal contiene la matriz con las señales digitales del registro Dimensión típica: (muestras, canales)
-print("Forma de la señal:", signal.shape) # Muestra el número de muestras y número de derivaciones
-print("Frecuencia de muestreo:", record.fs)
+# =========================================================
+# a. SEÑAL ECG
+# =========================================================
 
-x=signal[:,1]
-N=len(x)
-fs = record.fs
-tiempo = []
-for n in range(N):
-    tiempo.append(n/fs)
+fs, ecg = wavfile.read("ecg.wav")
 
-plt.figure()
-plt.plot(tiempo[:20000], x[:20000])
-plt.title("Señal ECG Original")
-plt.xlabel("Tiempo (s)")
+# usar un canal
+if len(ecg.shape) > 1:
+    ecg = ecg[:, 0]
+
+# Normalizar
+ecg = ecg / np.max(np.abs(ecg))
+
+# tiempo
+t = np.arange(len(ecg)) / fs
+
+# =========================================================
+# b. GRAFICA ORIGINAL
+# =========================================================
+
+plt.figure(figsize=(12,4))
+plt.plot(t, ecg)
+plt.title("ECG Original")
+plt.xlabel("Tiempo [s]")
 plt.ylabel("Amplitud")
 plt.grid()
 plt.show()
 
-#Estadistica
-suma=0 # Se inicializan las variables para poder hacer las estadisticas
-sumacuadrado=0
-sumaskew=0
-sumacurt=0
+# =========================================================
+# c. BUTTERWORTH
+# =========================================================
 
-# MEDIA
-for m in range(N):
-    suma+=x[m] #se suman los datos de x tomados desde la grafica y se meten en un arreglo m
-media=suma/N #se divide esta suma entre la cantidad de muestras o qrs
-print ("MANUAL")
-print ("Media:",media)
+lowcut = 0.5
+highcut = 40
+order = 4
 
-#DESVIACION
-sumacuadrado = 0  # Reiniciar acumulador
-for m in range(N):
-    sumacuadrado += (x[m] - media)**2  # Se calcula la diferencia entre cada dato y la media, luego se eleva al cuadrado
-varianza = sumacuadrado / N
-desviacion = varianza**0.5
-print("Desviación:", desviacion)
+# Nyquist
+nyquist = fs / 2
 
-#Coeficiente de variacion
-cv=abs(desviacion/media)
-print ("Coeficiente de variación:",cv)
+# Normalizar
+low = lowcut / nyquist
+high = highcut / nyquist
 
-#HISTOGRAMA
-intervalos=20
-xmin=x[0]
-xmax=x[0]
-for m in range(N):
-    if x[m]>xmax:
-        xmax=x[m]
-    if x[m]<xmin:
-        xmin=x[m]
-ancho=(xmax-xmin)/intervalos
-frecuencia=[0]*intervalos
-for m in range(N):
-    indice=int((x[m]-xmin)/ancho)
-    if indice >= intervalos:
-        indice= intervalos-1
-    frecuencia[indice]+=1
+# filtro
+b, a = signal.butter(order, [low, high], btype='band')
 
-#SKEWNESS
-for m in range(N):
-    sumaskew+= ((x[m]- media)/desviacion)**3
-skew=sumaskew/N
-print ("Skewness:",skew)
+# =========================================================
+# d. ECG FILTRADO
+# =========================================================
 
-#CURTOSIS
-for m in range(N):
-    sumacurt+=((x[m]-media)/desviacion)**4
-kurtosis=sumacurt/N
-kurt=kurtosis-3
-print ("Kurtosis:",kurtosis)
-print("Exceso de kurtosis:",kurt)
+ecg_filtrado = signal.lfilter(b, a, ecg)
 
-#CON FUNCIONES DE PYTHON
-from scipy.stats import skew, kurtosis
-print ("CON FUNCIONES DE PYTHON")
-media_np = np.mean(x)
-desv_np = np.std(x)
-cv_np = desv_np / media_np
+# =========================================================
+# e. FILTRO GRAFICADO
+# =========================================================
 
-#MEDIA
-media_np= np.mean(x)
-print("Media:", media_np)
-
-#DESVIACION
-desviacion_np= np.std(x)
-print("Desviación estándar:", desv_np)
-
-#COEFICIENTE DE VARIACION
-if media_np != 0:
-    cv_np = desv_np / abs(media_np)
-    print("Coeficiente de variación:", cv_np)
-
-#HISTOGRAMA
-plt.figure()
-plt.hist(x, bins=20)
-plt.title("Histograma ECG")
-plt.xlabel("Amplitud")
-plt.ylabel("Frecuencia")
+plt.figure(figsize=(12,4))
+plt.plot(t, ecg_filtrado)
+plt.title("ECG Filtrado")
+plt.xlabel("Tiempo [s]")
+plt.ylabel("Amplitud")
+plt.grid()
 plt.show()
 
-#SKEWNESS
-skew_np = skew(x)
-print("Skewness:", skew_np)
+# =========================================================
+# f. REPOSO Y LECTURA
+# =========================================================
 
-#CURTOSIS
-kurt_np = kurtosis(x)   # devuelve exceso de curtosis
-kurt_total = kurt_np + 3
-print("Curtosis:", kurt_total)
-print("Exceso de curtosis:", kurt_np)
+mitad = len(ecg_filtrado) // 2
 
-# PARÁMETROS DE ADQUISICIÓN
+reposo = ecg_filtrado[:mitad]
+lectura = ecg_filtrado[mitad:]
 
-fs = 1000  # Frecuencia de muestreo (Hz)
-duracion = 10  # Duración en segundos
-dispositivo = "Dev2/ai1"  # Verificar en NI MAX
+t1 = t[:mitad]
+t2 = t[mitad:]
 
-total_muestras = int(fs * duracion)
+# =========================================================
+# g. PICOS R
+# =========================================================
 
-# RUTA DONDE SE GUARDARÁ EL ARCHIVO
+distancia = int(0.6 * fs)
 
-ruta_guardado = r"C:/Users/USER/OneDrive/ANDY/UNI/3ER SEMESTRE/SEÑALES/"
-nombre_archivo = "senal_adquirida.txt"
+peaks1, _ = signal.find_peaks(
+    reposo,
+    distance=distancia,
+    prominence=0.3
+)
 
-# Crear carpeta si no existe
-os.makedirs(ruta_guardado, exist_ok=True)
+peaks2, _ = signal.find_peaks(
+    lectura,
+    distance=distancia,
+    prominence=0.3
+)
 
-ruta_completa = os.path.join(ruta_guardado, nombre_archivo)
-# ADQUISICIÓN DE LA SEÑAL
+# =========================================================
+# h. PICOS R GRAFICADOS
+# =========================================================
 
-with nidaqmx.Task() as task:
-    # Agregar canal analógico
-    task.ai_channels.add_ai_voltage_chan(dispositivo)
+plt.figure(figsize=(12,4))
+plt.plot(t1, reposo)
+plt.plot(t1[peaks1], reposo[peaks1], "ro")
+plt.title("Picos R - Reposo")
+plt.xlabel("Tiempo [s]")
+plt.grid()
+plt.show()
 
-    # Configurar reloj de muestreo
-    task.timing.cfg_samp_clk_timing(
-        rate=fs,
-        sample_mode=AcquisitionType.FINITE,
-        samps_per_chan=total_muestras
+plt.figure(figsize=(12,4))
+plt.plot(t2, lectura)
+plt.plot(t2[peaks2], lectura[peaks2], "ro")
+plt.title("Picos R - Lectura")
+plt.xlabel("Tiempo [s]")
+plt.grid()
+plt.show()
+
+# =========================================================
+# i. RR
+# =========================================================
+
+rr1 = np.diff(peaks1) / fs
+rr2 = np.diff(peaks2) / fs
+
+# =========================================================
+# j. MEDIA SDNN y RR
+# =========================================================
+
+media_rr1 = np.mean(rr1)
+media_rr2 = np.mean(rr2)
+
+sdnn1 = np.std(rr1)
+sdnn2 = np.std(rr2)
+
+print("\n============== RESULTADOS HRV ==============")
+
+print("\nREPOSO")
+print("Media RR:", media_rr1)
+print("SDNN:", sdnn1)
+
+print("\nLECTURA")
+print("Media RR:", media_rr2)
+print("SDNN:", sdnn2)
+
+# =========================================================
+# k. POINCARÉ
+# =========================================================
+
+x1 = rr1[:-1]
+y1 = rr1[1:]
+
+x2 = rr2[:-1]
+y2 = rr2[1:]
+
+plt.figure(figsize=(6,6))
+plt.scatter(x1, y1)
+plt.title("Poincaré - Reposo")
+plt.xlabel("RR(n)")
+plt.ylabel("RR(n+1)")
+plt.grid()
+plt.show()
+
+plt.figure(figsize=(6,6))
+plt.scatter(x2, y2)
+plt.title("Poincaré - Lectura")
+plt.xlabel("RR(n)")
+plt.ylabel("RR(n+1)")
+plt.grid()
+plt.show()
+
+# =========================================================
+# l. SD1 Y SD2
+# =========================================================
+
+def poincare(rr):
+
+    diff_rr = np.diff(rr)
+
+    sd1 = np.sqrt(np.var(diff_rr) / 2)
+
+    sd2 = np.sqrt(
+        2 * np.var(rr) - (np.var(diff_rr) / 2)
     )
 
-    # Leer datos
-    senal = task.read(number_of_samples_per_channel=total_muestras)
-# PROCESAMIENTO
-senal = np.array(senal)
-t = np.arange(len(senal)) / fs
+    return sd1, sd2
 
-# GUARDAR ARCHIVO
-datos = np.column_stack((t, senal))
-np.savetxt(
-    ruta_completa,
-    datos,
-    delimiter="\t",
-    header="Tiempo(s)\tVoltaje(V)",
-    comments=''
-)
-print("Archivo guardado en:")
-print(ruta_completa)
-# GRÁFICA
-plt.figure()
-plt.plot(t, senal)
-plt.grid()
-plt.xlabel("Tiempo (s)")
-plt.ylabel("Voltaje (V)")
-plt.title(f"fs = {fs} Hz | Duración = {duracion} s | Muestras = {len(senal)}")
-plt.show()
-data = np.loadtxt("senal_adquirida.txt", skiprows=1)
-t = data[:,0]
-senal = data[:,1]
+sd1_1, sd2_1 = poincare(rr1)
+sd1_2, sd2_2 = poincare(rr2)
 
-# FUNCIÓN SNR
-def calcular_snr(signal, signal_noisy):
-    ruido = signal_noisy - signal      # Diferencia = ruido agregado
-    pot_signal = np.mean(signal**2)    # Potencia señal
-    pot_ruido = np.mean(ruido**2)      # Potencia ruido
-    snr = 10 * np.log10(pot_signal / pot_ruido)
-    return snr
+# =========================================================
+# m. CSI Y CVI
+# =========================================================
 
-# Ruido gaussiano
-ruido_gauss = np.random.normal(0, 0.03, len(senal))
-senal_gauss = senal + ruido_gauss
-snr_gauss = calcular_snr(senal, senal_gauss)
-print("SNR Ruido Gaussiano:", snr_gauss, "dB")
-plt.figure()
-plt.plot(t, senal_gauss)
-plt.title(f"Señal con Ruido Gaussiano | SNR = {snr_gauss:.2f} dB")
-plt.xlabel("Tiempo (s)")
-plt.ylabel("Voltaje (V)")
-plt.grid()
-plt.show()
-senal_impulso = senal.copy()
+csi1 = sd2_1 / sd1_1
+cvi1 = np.log10(sd1_1 * sd2_1)
 
-# 1% de muestras contaminadas
-num_impulsos = int(0.005 * len(senal))   # Solo 0.5%
-senal_impulso[indices] = np.max(senal) * 1.2
-senal_impulso[indices] = np.max(senal) * 2
-snr_impulso = calcular_snr(senal, senal_impulso)
-print("SNR Ruido Impulso:", snr_impulso, "dB")
-plt.figure()
-plt.plot(t, senal_impulso)
-plt.title(f"Señal con Ruido Impulso | SNR = {snr_impulso:.2f} dB")
-plt.xlabel("Tiempo (s)")
-plt.ylabel("Voltaje (V)")
-plt.grid()
-plt.show()
+csi2 = sd2_2 / sd1_2
+cvi2 = np.log10(sd1_2 * sd2_2)
 
-#Ruido Artefacto
-artefacto = 0.15 * np.sin(2*np.pi*1*t)
-senal_artefacto = senal + artefacto
-snr_artefacto = calcular_snr(senal, senal_artefacto)
-print("SNR Ruido Artefacto:", snr_artefacto, "dB")
-plt.figure()
-plt.plot(t, senal_artefacto)
-plt.title(f"Señal con Artefacto | SNR = {snr_artefacto:.2f} dB")
-plt.xlabel("Tiempo (s)")
-plt.ylabel("Voltaje (V)")
-plt.grid()
-plt.show()
+print("\n============== POINCARÉ ==============")
+
+print("\nREPOSO")
+print("SD1:", sd1_1)
+print("SD2:", sd2_1)
+print("CSI:", csi1)
+print("CVI:", cvi1)
+
+print("\nLECTURA")
+print("SD1:", sd1_2)
+print("SD2:", sd2_2)
+print("CSI:", csi2)
+print("CVI:", cvi2)
