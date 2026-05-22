@@ -8,9 +8,9 @@ Sara Sofía Piñeros Tovar – 5600962
 
 INTRODUCCIÓN
 
-Para entender cómo responde nuestro cuerpo a diferentes estímulos, decidimos analizar la variabilidad de la frecuencia cardíaca (HRV), que básicamente mide los sutiles cambios de tiempo entre cada latido del corazón para evaluar cómo se equilibra nuestro sistema nervioso autónomo. Con esto en mente, registramos una señal electrocardiográfica (ECG) en dos momentos clave: mientras la persona estaba en completo reposo y mientras leía en voz alta. Esta captura se logró conectando un sensor AD8232 a un sistema STM32, lo que nos permitió recopilar los datos crudos de la actividad eléctrica del corazón en ambas situaciones experimentales.
+La manera en como nuestro cuerpo es capaz de responder a diferentes estímulos, se evalua el cambio de la frecuencia cardíaca (HRV), en donde se toma la variacion del tiempo latido por latido con el fin de analizar sistema nervioso autónomo, luego registramos una señal electrocardiográfica (ECG) en dos momentos clave: mientras la persona esta en reposo y cuando leía en voz alta,  se tomo por medio conectando un sensor AD8232 a un sistema STM32, lo que nos permitió recopilar los datos crudos de la actividad eléctrica del corazón en ambas situaciones experimentales.
 
-Una vez que tuvimos las señales, nos metimos de lleno al procesamiento de datos en Python para limpiar el ruido de la lectura mediante un filtro digital Butterworth. Con la señal ya nítida, pudimos identificar con precisión los picos R del corazón y calcular los intervalos entre latidos. A partir de ahí, no solo obtuvimos métricas estadísticas clave como el SDNN, sino que también construimos diagramas de Poincaré para calcular índices más avanzados (como SD1, SD2, CSI y CVI). Todo este análisis nos permitió visualizar de forma muy clara cómo el estrés de hablar en público altera el control que el sistema nervioso ejerce sobre el corazón en comparación con un estado de calma.
+Cuando ya se capturo las señales, se proceso en Pycharm para limpiar el ruido de la lectura mediante un filtro digital Butterworth, luego se identifico con precisión los picos R del corazón y calcular los intervalos, logramos tener métricas estadísticas clave como el SDNN y también construimos diagramas de Poincaré para calcular índices más avanzados como SD1, SD2, CSI y CVI, con este análisis se logro visualizar de forma muy clara cómo el estrés de hablar en público altera el control que el sistema nervioso ejerce sobre el corazón en comparación con un estado de calma.
 
 
 
@@ -18,44 +18,44 @@ OBJETIVOS
 
 Objetivo General
 
-Evaluar el equilibrio del sistema nervioso autónomo en estados de reposo y durante la lectura en voz alta, mediante el procesamiento digital de señales electrocardiográficas y el cálculo de parámetros de variabilidad de la frecuencia cardíaca (HRV).
+Evaluar la neutralizacion del sistema nervioso autónomo en reposo y lectura en voz alta, por medio del procesamiento de señales electrocardiográficas y el cálculo de parámetros de la frecuencia cardíaca.
 
 
 
 Objetivos Específicos
 
-* Adquirir una señal ECG utilizando STM32 y el sensor AD8232.
-* Procesar la señal ECG en Python mediante técnicas de filtrado digital.
-* Detectar automáticamente los picos R de la señal cardíaca.
-* Calcular los intervalos RR y parámetros HRV.
-* Construir diagramas de Poincaré para el análisis geométrico de la HRV.
-* Comparar la actividad simpática y parasimpática entre reposo y lectura.
+* Captar una señal ECG por medio STM32 y AD8232.
+* Procesar señal ECG en Pycharm mediante técnicas de filtrado digital.
+* Hallar los picos R de la señal cardíaca.
+* Calcular intervalos RR y parámetros HRV.
+* Crearr diagramas de Poincaré para el análisis geométrico de la HRV.
+* Analizar actividad simpática y parasimpática.
 
 
 
 DESCRIPCIÓN DE LA SEÑAL
 
-Para capturar los datos en el laboratorio, registramos una señal de ECG durante cuatro minutos usando un módulo AD8232 y una tarjeta STM32. El experimento se dividió a la mitad: los primeros dos minutos el participante estuvo en completo reposo y silencio, y los dos restantes realizó una lectura en voz alta. Todo el registro se guardó en un archivo .wav para poder comparar el comportamiento del corazón bajo ambas condiciones.
+Para tomar datos del laboratorio, se capturo una señal de ECG durante cuatro minutos usando un módulo AD8232 y una tarjeta STM32. El experimento se dividió a la mitad: los primeros dos minutos el participante estuvo en completo reposo y silencio, y los dos restantes realizó una lectura en voz alta. Todo el registro se guardó en un archivo .wav para poder comparar el comportamiento del corazón bajo ambas condiciones.
 
-El procesamiento digital se realizó en Python utilizando las librerías NumPy, Matplotlib y SciPy. Estas herramientas nos permitieron limpiar el ruido de la señal, detectar con precisión los picos R y calcular los parámetros estadísticos. Finalmente, con estos datos construimos los diagramas de Poincaré para analizar visualmente los cambios en el balance del sistema nervioso autónomo.
+El analisis y  procesamiento digital se realizó en Pycharm ocupando librerías NumPy, Matplotlib y SciPy, nos permitieron limpiar el ruido de la señal, detectar con precisión los picos R y calcular los parámetros estadísticos, por ultimo estos datos construimos los diagramas de Poincaré para analizar visualmente los cambios en el balance del sistema nervioso autónomo.
 
 
 
 PROCEDIMIENTO
 
-1 Montaje: Estudiamos la teoría de la HRV y armamos el sistema conectando el sensor AD8232 a la STM32, colocando los electrodos en el participante (configuración RA-LA-RL) para medir el ECG.
+1 se armamo el sistema conectando el sensor AD8232 a la STM32, colocando los electrodos en el participante (configuración RA-LA-RL) para medir el ECG.
 
-2 Captura: Grabamos cuatro minutos de señal, la pasamos a la computadora por UART y la guardamos como archivo .wav. En Python, la cargamos, la normalizamos y creamos su vector de tiempo.
+2 tomar cuatro minutos de señal, la pasamos a la computadora por UART y la guardamos como archivo .wav. En Pychar, la cargamos, la normalizamos y creamos su vector de tiempo.
 
-3 Lectura: Programamos el script en Python usando SciPy, seleccionamos el canal principal de la señal y la dejamos lista y escalada según su frecuencia de muestreo.
+3 programamos el script en Pycharm usando SciPy, seleccionamos el canal principal de la señal y la dejamos lista y escalada según su frecuencia de muestreo.
 
-4 Filtrado: Limpiamos el ruido y el movimiento de la línea base aplicando un filtro Butterworth pasa banda (0.5 a 40 Hz) con las funciones signal.butter() y signal.lfilter().
+4 limpiar ruido y movimiento de la línea base aplicando un filtro Butterworth pasa banda (0.5 a 40 Hz) con las funciones signal.butter() y signal.lfilter().
 
-5 Picos R: Dividimos el registro en dos bloques (reposo y lectura). Usamos find_peaks() de SciPy para detectar los latidos, fijando una distancia mínima de 0.6 s y una prominencia de 0.3.
+5  el registro se tomo en dos bloques (reposo y lectura). Usamos find_peaks() de SciPy para detectar los latidos, fijando una distancia mínima de 0.6 s y una prominencia de 0.3.
 
-6 HRV y Poincaré: Calculamos los intervalos RR (tiempo entre latidos) para obtener la media y el SDNN. Además, graficamos los diagramas de Poincaré para extraer las métricas espaciales SD1 y SD2.
+6 calcular los intervalos RR (tiempo entre latidos) para obtener la media y el SDNN. Además, graficamos los diagramas de Poincaré para extraer las métricas espaciales SD1 y SD2.
 
-7 Balance: Calculamos los índices CSI (actividad simpática) y CVI (actividad parasimpática) para comparar numéricamente cómo reaccionó el sistema nervioso entre el reposo y la lectura.
+7 analizar los índices CSI (actividad simpática) y CVI (actividad parasimpática) para comparar numéricamente cómo reaccionó el sistema nervioso entre el reposo y la lectura.
 
 
 
@@ -113,25 +113,24 @@ A nivel neurológico, este cambio se confirmó por el aumento del índice CSI y 
 
 PREGUNTAS
 
-¿La lectura en voz alta modifica la variabilidad cardíaca?
+A. La lectura en voz alta cambia la variabilidad cardíaca?
 
-Sí, debido a que durante la lectura se incrementa la actividad simpática asociada al esfuerzo cognitivo y respiratorio. Esto produce un aumento de la frecuencia cardíaca y una disminución de la variabilidad de los intervalos RR, evidenciada mediante la reducción de SDNN y SD1.
-
-
-
-¿Por qué es necesario filtrar la señal ECG?
-
-El filtrado permite eliminar ruido e interferencias presentes en la señal biomédica, tales como variaciones lentas de línea base y ruido de alta frecuencia. Esto mejora considerablemente la detección de los complejos QRS y aumenta la precisión del análisis HRV.
+Sí, puesto que al momento de la lectura se incrementa la actividad simpática asociada al esfuerzo cognitivo y respiratorio. Esto produce un aumento de la frecuencia cardíaca y una disminución de la variabilidad de los intervalos RR, evidenciada mediante la reducción de SDNN y SD1.
 
 
 
-¿Qué representan los índices CSI y CVI?
+B. Es necesario filtrar la señal ECG?
 
-El índice CSI representa el predominio de actividad simpática, mientras que el índice CVI se relaciona con la actividad parasimpática o vagal. Ambos parámetros permiten evaluar el balance autonómico del organismo bajo diferentes condiciones fisiológicas.
+Si, ya que ll filtrado logra eliminar ruido e interferencias presentes en la señal biomédica, tales como variaciones lentas de línea base y ruido de alta frecuencia. Esto mejora considerablemente la detección de los complejos QRS y aumenta la precisión del análisis HRV.
+
+
+
+C. Qué representan  CVI y CSI?
+
+El CSI es para el predominio de actividad simpática, y el  CVI para la actividad parasimpática y estos parámetros permiten evaluar el balance autonómico del organismo bajo diferentes condiciones fisiológicas.
 
 
 
 CONCLUSIONES
 
-La práctica demostró que logramos capturar y procesar con éxito la señal de ECG usando la STM32 y Python, donde el filtro Butterworth fue clave para limpiar el ruido y dejar los picos R listos para su detección. Al analizar la HRV, saltó a la vista el impacto de la lectura en voz alta en comparación con el reposo: los parámetros SDNN y CSI, respaldados visualmente por unos diagramas de Poincaré mucho más compactos, confirmaron que el estrés de hablar aceleró el corazón, redujo su variabilidad y activó de inmediato el sistema simpático.
-Finalmente, los índices geométricos y estadísticos utilizados demostraron ser herramientas útiles para evaluar el comportamiento del sistema nervioso autónomo y analizar la dinámica cardíaca bajo diferentes condiciones fisiológicas.
+En este laboratorio se verifico que logramos capturar y procesar con éxito la señal de ECG usando la STM32 y Pycharm, donde el filtro Butterworth fue clave para limpiar el ruido y dejar los picos R listos para su detección. Al analizar la HRV, saltó a la vista el impacto de la lectura en voz alta en comparación con el reposo: los parámetros SDNN y CSI, respaldados visualmente por unos diagramas de Poincaré mucho más compactos, confirmaron que el estrés de hablar aceleró el corazón, redujo su variabilidad y activó de inmediato el sistema simpático. Por ultimo para los índices geométricos y estadísticos utilizados demostraron ser herramientas útiles para evaluar el comportamiento del sistema nervioso autónomo y analizar la dinámica cardíaca bajo diferentes condiciones fisiológicas.
